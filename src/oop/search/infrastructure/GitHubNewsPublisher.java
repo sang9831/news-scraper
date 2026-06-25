@@ -31,7 +31,7 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
                 "title": "%s",
                 "body": "%s"
                 }
-                """.formatted("%s (%s)".formatted(topic, ZonedDateTime.now(ZoneId.of("Asia/Seoul")), newsResults)).trim();
+                """.formatted("%s (%s)".formatted(topic, ZonedDateTime.now(ZoneId.of("Asia/Seoul"))), newsResults).trim();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(payload, StandardCharsets.UTF_8))
                 .uri(URI.create(url))
