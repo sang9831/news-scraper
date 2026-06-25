@@ -31,7 +31,11 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
                 "title": "%s",
                 "body": "%s"
                 }
-                """.formatted("%s (%s)".formatted(topic, ZonedDateTime.now(ZoneId.of("Asia/Seoul"))), newsResults).trim();
+                """.formatted(
+                // %s -> topic. %s -> 한국기준 현재 시간
+                "%s (%s)".formatted(topic, ZonedDateTime.now(ZoneId.of("Asia/Seoul"))),
+                newsResults
+        ).trim();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(payload, StandardCharsets.UTF_8))
                 .uri(URI.create(url))
@@ -42,14 +46,26 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
                 .header("Content-Type", "application/json; charset=UTF-8")
                 .build();
 
+//        try {
+//            httpClient.send(
+//                    request,
+//                    HttpResponse.BodyHandlers.ofString()
+//            );
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         try {
-            httpClient.send(
-                    request,
-                    HttpResponse.BodyHandlers.ofString()
-            );
-
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            // 응답 코드가 201(Created)이 아니면 로그를 찍어보도록 개선
+            if (response.statusCode() != 201) {
+                System.err.println("GitHub API 오류 발생! 상태코드: " + response.statusCode());
+                System.err.println("응답 본문: " + response.body());
+                System.exit(1); // 🔴 에러 발생 시 Action이 실패하도록 종료 코드 1 반환
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            System.exit(1);
         }
     }
 }
