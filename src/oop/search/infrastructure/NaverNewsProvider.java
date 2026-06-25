@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NaverNewsProvider extends AbstractHttpScraper {
+public class NaverNewsProvider extends AbstractHttpClient implements NewsProvider{
     private static final String NEWS_API_URL = "https://openapi.naver.com/v1/search/news.json";
     private final String clientId;
     private final String clientSecret;
