@@ -4,6 +4,12 @@ import oop.search.application.NewsProvider;
 import oop.search.domain.NewsCategory;
 import oop.search.domain.NewsResult;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NaverNewsProvider extends AbstractHttpScraper {
@@ -25,12 +31,59 @@ public class NaverNewsProvider extends AbstractHttpScraper {
 
     @Override
     public List<NewsResult> fetchNews(String searchQuery, int limit) {
-        return List.of();
+        String url = endpoint + "?query="
+                + URLEncoder.encode(searchQuery, StandardCharsets.UTF_8)
+                + "&display=" + limit
+                + "&sort="
+                + category.getQueryValue()
+                + "&start=1";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .header("X-Naver-Client-Id", clientId)
+                .header("X-Naver-Client-Secret", clientSecret)
+                .build();
+
+        List<NewsResult> results = new ArrayList<>();
+
+        try{
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            String body = response.body();
+            System.out.println("body = " + body);
+
+            String items = body.split("items")[1];
+//            System.out.println("items = " + items);
+
+            String[] itemArray = items.split("},");
+
+            for (String item : itemArray) {
+                System.out.println("item = " + item);
+//                String title=item.split("\"title\":")[1].split("\",")[0];
+                String title=cutText(item, "\"title\":", "\",");
+                String link =cutText(item, "\"link\":\"", "\",");
+                String description=cutText(item, "\"description\":\"", "\",");
+                String pubDate = cutText(item, "\"pubDate\":\"", "\"");
+                NewsResult result = new NewsResult(title, description, link, pubDate);
+                results.add(result);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return results;
+    }
+
+    public String cutText(String original, String prefix, String suffix){
+        return original.split(prefix)[1].split(suffix)[0];
     }
 
     public static void main(String[] args) {
         NewsProvider provider = new NaverNewsProvider();
-        List<NewsResult> results = provider.fetchNews("축구", 10);
-        System.out.println("results = " + results);
+        List<NewsResult> results = provider.fetchNews("앨리엇 앤더슨", 10);
+        for (NewsResult newsItem : results) {
+            System.out.println("newsItem = " + newsItem);
+        }
     }
 }
