@@ -83,7 +83,7 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
             sb.append("<blockquote>%s</blockquote>".formatted(newsResult.description()));
         }
         String body = sb.toString();
-        System.out.println("body = " + body);
+//        System.out.println("body = " + body);
 
         String payload = """
                 {
@@ -96,6 +96,8 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
 //                newsResults
                 body
         ).trim();
+
+        System.out.println("payload = " + payload);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(payload, StandardCharsets.UTF_8))
