@@ -43,7 +43,7 @@ jobs:
       - name: 소스 컴파일
         run: |
           echo "소스 컴파일 시작..."
-          javac -d out $(find src/oop -name '*.java')
+          javac -cp "lib/jsoup-1.22.2.jar" -d out $(find src/oop -name '*.java')
           class_count=$(find out -name '*.class' | wc -l | tr -d ' ')
           echo "컴파일 완료: 클래스 ${class_count}개"
 
@@ -54,7 +54,7 @@ jobs:
         #          echo "이슈 생성 작업 종료"
         run: |
           echo "뉴스 수집 및 이슈 생성 시작..."
-          java -cp out oop.search.presentation.GitHubNewsApp
+          java -cp "out:lib/jsoup-1.22.2.jar" oop.search.presentation.GitHubNewsApp
           echo "이슈 생성 작업 종료"
         env:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
