@@ -83,6 +83,11 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
             sb.append("<blockquote>%s</blockquote>".formatted(newsResult.description()));
         }
         String body = sb.toString();
+        body = body
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r");
 //        System.out.println("body = " + body);
 
         String payload = """
