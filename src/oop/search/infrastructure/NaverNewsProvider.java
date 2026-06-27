@@ -50,7 +50,7 @@ public class NaverNewsProvider extends AbstractHttpClient implements NewsProvide
         try{
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
-            System.out.println("body = " + body);
+//            System.out.println("body = " + body);
 
             String items = body.split("items")[1];
 //            System.out.println("items = " + items);
