@@ -3,6 +3,8 @@ package oop.search.infrastructure;
 import oop.search.application.NewsProvider;
 import oop.search.domain.NewsCategory;
 import oop.search.domain.NewsResult;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -64,7 +66,15 @@ public class NaverNewsProvider extends AbstractHttpClient implements NewsProvide
                 String link =cutText(item, "\"link\":\"", "\",");
                 String description=cutText(item, "\"description\":\"", "\",");
                 String pubDate = cutText(item, "\"pubDate\":\"", "\"");
-                NewsResult result = new NewsResult(title, description, link, pubDate);
+
+                Document doc = Jsoup.connect(link).get();
+
+                String imageUrl = doc.select("meta[property=og:image]")
+                        .attr("content");
+
+                System.out.println(imageUrl);
+
+                NewsResult result = new NewsResult(title, description, link, pubDate, imageUrl);
                 results.add(result);
             }
 

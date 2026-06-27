@@ -74,15 +74,40 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
         String url = endpoint;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("<strong>%s</strong>(와)과 관련된 최신 뉴스입니다<br><br>".formatted(topic));
+
+        sb.append("<strong>%s</strong>(와)과 관련된 최신 뉴스입니다.<br><br>"
+                .formatted(topic));
+
         for (NewsResult newsResult : newsResults) {
-            sb.append("[%s]".formatted(newsResult.title()));
-            sb.append("(%s) <br> `%s` <br>".formatted(
-                    newsResult.url(),
-                    newsResult.pubDate()));
-            sb.append("<blockquote>%s</blockquote>".formatted(newsResult.description()));
+
+            // 이미지가 있는 경우만 출력
+            if (newsResult.imageUrl() != null && !newsResult.imageUrl().isBlank()) {
+                sb.append("![](")
+                        .append(newsResult.imageUrl())
+                        .append(")\n\n");
+            }
+
+            sb.append("### ")
+                    .append(newsResult.title())
+                    .append("<br>");
+
+            sb.append("🔗 ")
+                    .append(newsResult.url())
+                    .append("<br>");
+
+            sb.append("📅 ")
+                    .append(newsResult.pubDate())
+                    .append("<br><br>");
+
+            sb.append("<blockquote>")
+                    .append(newsResult.description())
+                    .append("</blockquote>");
+
+            sb.append("<hr>");
         }
+
         String body = sb.toString();
+
         body = body
                 .replace("\\", "\\\\")
                 .replace("\"", "\\\"")
