@@ -67,6 +67,8 @@ public class NaverNewsProvider extends AbstractHttpClient implements NewsProvide
                 String description=cutText(item, "\"description\":\"", "\",");
                 String pubDate = cutText(item, "\"pubDate\":\"", "\"");
 
+                link = link.replace("\\/", "/");
+
                 Document doc = Jsoup.connect(link).get();
 
                 String imageUrl = doc.select("meta[property=og:image]")
